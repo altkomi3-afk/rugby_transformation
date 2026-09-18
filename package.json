@@ -1,0 +1,11 @@
+{
+  "name": "rugby-tactics-board",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ラグビー戦術ボード（Netlify Identity + Netlify Blobs）",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.1",
+    "@netlify/identity": "latest"
+  }
+}

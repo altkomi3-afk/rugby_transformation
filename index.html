@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>ラグビー戦術ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --turf-1:#1f6b3a;
+    --turf-2:#245f36;
+    --chalk:#f4f6f0;
+    --shell-bg:#12181c;
+    --shell-panel:#1b2329;
+    --shell-panel-2:#222c33;
+    --shell-line:#33414a;
+    --text-hi:#eef2ee;
+    --text-lo:#9db0ab;
+    --amber:#d9a441;
+    --amber-dim:#8a6a2c;
+    --red:#c0392b;
+    --red-dim:#7a241a;
+    --blue:#1f5fa8;
+    --blue-dim:#153e6d;
+    --focus:#d9a441;
+  }
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+  }
+  :root[data-theme="light"]{
+    --shell-bg:#eef1ee;
+    --shell-panel:#ffffff;
+    --shell-panel-2:#f4f6f4;
+    --shell-line:#d6dcd6;
+    --text-hi:#182019;
+    --text-lo:#4d5c53;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --shell-bg:#eef1ee;
+      --shell-panel:#ffffff;
+      --shell-panel-2:#f4f6f4;
+      --shell-line:#d6dcd6;
+      --text-hi:#182019;
+      --text-lo:#4d5c53;
+      color-scheme: light;
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--shell-bg);
+    color:var(--text-hi);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 16px 60px;
+  }
+  header.top{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:4px;
+  }
+  h1{
+    font-family:"Oswald",sans-serif;
+    font-weight:700;
+    letter-spacing:.02em;
+    font-size:clamp(22px,4vw,32px);
+    margin:0;
+    color:var(--text-hi);
+  }
+  .sub{
+    color:var(--text-lo);
+    font-size:13.5px;
+    margin:0 0 18px;
+    max-width:70ch;
+    line-height:1.7;
+  }
+
+  .panel{
+    background:var(--shell-panel);
+    border:1px solid var(--shell-line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:14px;
+  }
+
+  .controls-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .field-select-group{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1 1 260px;
+    min-width:220px;
+  }
+  label.small-label{
+    font-size:11.5px;
+    color:var(--text-lo);
+  }
+  select{
+    background:var(--shell-panel-2);
+    color:var(--text-hi);
+    border:1px solid var(--shell-line);
+    border-radius:7px;
+    padding:9px 10px;
+    font-size:14.5px;
+    font-family:inherit;
+  }
+  input[type="number"]{
+    background:var(--shell-panel-2);
+    color:var(--text-hi);
+    border:1px solid var(--shell-line);
+    border-radius:7px;
+    padding:9px 10px;
+    font-size:14.5px;
+    font-family:inherit;
+    width:100%;
+  }
+  select:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:2px;
+  }
+  button{
+    font-family:"Noto Sans JP",sans-serif;
+    font-size:13.5px;
+    background:var(--shell-panel-2);
+    color:var(--text-hi);
+    border:1px solid var(--shell-line);
+    border-radius:7px;
+    padding:9px 13px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  button:hover{ border-color:var(--amber-dim); }
+  button.primary{
+    background:var(--amber);
+    color:#20180a;
+    border-color:var(--amber);
+    font-weight:700;
+  }
+  button.primary:hover{ filter:brightness(1.08); }
+  button.on{
+    background:var(--amber-dim);
+    border-color:var(--amber);
+    color:var(--text-hi);
+  }
+  button.danger:hover{ border-color:var(--red); }
+
+  .info-blurb{
+    font-size:13.5px;
+    color:var(--text-lo);
+    line-height:1.75;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--shell-line);
+  }
+  .info-blurb b{ color:var(--text-hi); font-weight:700; }
+
+  .draw-toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+  }
+  .swatch{
+    width:26px;height:26px;border-radius:50%;
+    border:2px solid var(--shell-line);
+    cursor:pointer;
+    padding:0;
+  }
+  .swatch.active{ border-color:var(--text-hi); box-shadow:0 0 0 2px var(--amber); }
+  .swatch.c-red{background:var(--red);}
+  .swatch.c-blue{background:var(--blue);}
+  .swatch.c-ink{background:#e7e3d6;}
+
+  .board-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio: 1200 / 900;
+    background:var(--turf-2);
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--shell-line);
+    touch-action:none;
+    user-select:none;
+  }
+  .board-wrap.draw-mode .token{ pointer-events:none; }
+  .board-wrap.draw-mode .arrow-layer{ pointer-events:auto; cursor:crosshair; }
+  .board-wrap.playing .token{ pointer-events:none; transition:none; }
+  .arrow-layer{ pointer-events:none; }
+
+  svg.layer{
+    position:absolute; inset:0; width:100%; height:100%; display:block;
+  }
+
+  .bench-tag{
+    position:absolute;
+    font-family:"Oswald",sans-serif;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:rgba(244,246,240,.55);
+    pointer-events:none;
+  }
+
+  .token{
+    position:absolute;
+    width:5.2%;
+    aspect-ratio:1/1;
+    max-width:38px;
+    min-width:22px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:"Oswald",sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:#fff;
+    border:2px solid rgba(255,255,255,.85);
+    box-shadow:0 2px 5px rgba(0,0,0,.35);
+    cursor:grab;
+    transition:left .45s cubic-bezier(.4,0,.2,1), top .45s cubic-bezier(.4,0,.2,1);
+    touch-action:none;
+  }
+  .token.dragging{ transition:none; cursor:grabbing; z-index:40; filter:brightness(1.15); }
+  .token.selected{ box-shadow:0 0 0 3px var(--amber), 0 2px 6px rgba(0,0,0,.4); z-index:30; }
+  .token.team-red{ background:var(--red); }
+  .token.team-blue{ background:var(--blue); }
+  .token.ball{
+    background:#6b4225;
+    border-color:#f4f6f0;
+    width:3.6%; max-width:26px; min-width:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,.45);
+  }
+
+  .legend{
+    display:flex; gap:18px; align-items:center; margin-top:10px; flex-wrap:wrap;
+    font-size:12.5px; color:var(--text-lo);
+  }
+  .legend .dot{ display:inline-block; width:11px;height:11px;border-radius:50%; margin-right:6px; vertical-align:-1px; }
+
+  .authbar{
+    margin-left:auto;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  #authStatus{ font-size:12px; color:var(--text-lo); }
+
+  .auth-panel{
+    display:none;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+    background:var(--shell-panel-2);
+    border:1px solid var(--shell-line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-top:8px;
+  }
+  .auth-panel input{
+    background:var(--shell-bg);
+    color:var(--text-hi);
+    border:1px solid var(--shell-line);
+    border-radius:6px;
+    padding:8px 9px;
+    font-size:13.5px;
+    font-family:inherit;
+    min-width:160px;
+  }
+  .auth-msg{
+    width:100%;
+    font-size:12.5px;
+    color:var(--text-lo);
+  }
+  .auth-msg.error{ color:#e08a7d; }
+
+  .foot-note{
+    font-size:11.5px; color:var(--text-lo); margin-top:16px; text-align:center; line-height:1.7;
+  }
+
+  @media (max-width:640px){
+    .controls-row{ gap:8px; }
+    button{ padding:8px 10px; font-size:12.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>ラグビー戦術ボード</h1>
+    <div class="authbar" id="authBar">
+      <span id="authStatus">未ログイン（クラウド保存にはログインが必要です）</span>
+      <button id="loginBtn">ログイン / 新規登録</button>
+      <button id="logoutBtn" style="display:none;">ログアウト</button>
+    </div>
+  </header>
+  <div class="auth-panel" id="authPanel">
+    <input type="email" id="authEmail" placeholder="メールアドレス" autocomplete="username">
+    <input type="password" id="authPassword" placeholder="パスワード（6文字以上）" autocomplete="current-password">
+    <button id="authLoginBtn" class="primary">ログイン</button>
+    <button id="authSignupBtn">新規登録</button>
+    <button id="authCancelBtn">閉じる</button>
+    <div id="authMsg" class="auth-msg">新規登録すると確認メールが届きます。メール内のリンクを開くまでログインできません。</div>
+  </div>
+  <p class="sub">赤15人・青15人のコマをドラッグして自由に配置できます。上のメニューから代表的なフォーメーションを呼び出し、下部の「矢印」ツールでランコースやパスコースを描き込めます。</p>
+
+  <div class="panel">
+    <div class="controls-row">
+      <div class="field-select-group">
+        <label class="small-label" for="formationSelect">フォーメーション</label>
+        <select id="formationSelect"></select>
+      </div>
+      <button id="clearBenchBtn" title="全員をベンチに戻す">ベンチに戻す</button>
+      <button id="saveBtn">この端末に保存</button>
+      <button id="loadBtn">この端末から読込</button>
+      <button id="cloudSaveBtn" class="primary">☁️ クラウドに保存</button>
+      <button id="cloudLoadBtn">☁️ クラウドから読込</button>
+    </div>
+    <div class="controls-row" style="margin-top:10px;">
+      <button id="addFormationBtn">＋ 今の配置をフォーメーションに追加</button>
+      <button id="deleteFormationBtn" class="danger" style="display:none;">選択中のマイフォーメーションを削除</button>
+      <button id="resetOverrideBtn" style="display:none;">標準配置に戻す</button>
+    </div>
+    <div id="infoBlurb" class="info-blurb"></div>
+  </div>
+
+  <div class="panel">
+    <div class="controls-row draw-toolbar">
+      <button id="drawModeBtn">✏️ 矢印モード</button>
+      <span class="small-label" style="margin-left:2px;">色:</span>
+      <button class="swatch c-red active" data-color="#c0392b" title="赤"></button>
+      <button class="swatch c-blue" data-color="#1f5fa8" title="青"></button>
+      <button class="swatch c-ink" data-color="#e7e3d6" title="白"></button>
+      <button id="undoArrowBtn">1つ戻す</button>
+      <button id="clearArrowsBtn" class="danger">矢印を消す</button>
+      <span class="small-label" style="margin-left:10px;">コマをタップで複数選択できます</span>
+      <button id="clearSelectionBtn">選択解除</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="small-label" style="margin:0 0 10px;line-height:1.7;">
+      「● 録画開始」→ プレーヤーを動かす → 「Ⅱ キーフレーム」で区切る、を繰り返し、最後に「■ 録画終了」を押します。
+      再生では、キーフレームごとの配置へ全員が同時に走って移動します。
+    </p>
+    <div class="controls-row">
+      <button id="recStartBtn" class="primary">● 録画開始</button>
+      <button id="recPauseBtn" disabled>Ⅱ キーフレーム</button>
+      <button id="recStopBtn" disabled>■ 録画終了</button>
+    </div>
+    <div class="controls-row" style="margin-top:8px;">
+      <span id="recStatus" class="small-label">録画していません</span>
+    </div>
+    <div class="controls-row" style="margin-top:10px;">
+      <div class="field-select-group">
+        <label class="small-label" for="recordingSelect">保存済みの録画</label>
+        <select id="recordingSelect"><option value="">（保存された録画はありません）</option></select>
+      </div>
+      <button id="recSaveBtn">名前を付けて保存</button>
+      <button id="recDeleteBtn" class="danger" style="display:none;">削除</button>
+    </div>
+    <div class="controls-row" style="margin-top:10px;">
+      <button id="playBtn" class="primary" disabled>▶ 再生</button>
+      <button id="stopPlayBtn">■ 停止</button>
+      <div class="field-select-group" style="flex:0 0 auto; min-width:170px;">
+        <label class="small-label" for="paceInput">基準ペース（100mを何秒で走るか）</label>
+        <input type="number" id="paceInput" value="12" min="4" max="30" step="0.5">
+      </div>
+      <div class="field-select-group" style="flex:0 0 auto; min-width:110px;">
+        <label class="small-label" for="speedSelect">再生速度</label>
+        <select id="speedSelect">
+          <option value="0.5">0.5倍</option>
+          <option value="1" selected>1倍</option>
+          <option value="1.5">1.5倍</option>
+          <option value="2">2倍</option>
+          <option value="4">4倍</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="board-wrap" id="boardWrap">
+    <svg class="layer field-svg" viewBox="0 0 1200 900" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <svg class="layer arrow-layer" id="arrowLayer" viewBox="0 0 1200 900" preserveAspectRatio="none">
+      <defs>
+        <marker id="head-c0392b" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#c0392b"/>
+        </marker>
+        <marker id="head-1f5fa8" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#1f5fa8"/>
+        </marker>
+        <marker id="head-e7e3d6" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#e7e3d6"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="bench-tag" style="top:2px; left:10px;">控え（ブルー）</div>
+    <div class="bench-tag" style="bottom:2px; left:10px;">控え（レッド）</div>
+    <div class="tokens-layer" id="tokensLayer"></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--red);"></span>レッド 15</span>
+    <span><span class="dot" style="background:var(--blue);"></span>ブルー 15</span>
+    <span><span class="dot" style="background:#6b4225;"></span>ボール</span>
+  </div>
+
+  <p class="foot-note">「この端末に保存」はブラウザ内だけの一時保存です。ログインして「クラウドに保存」を使うと、どの端末からでも同じ内容を呼び出せます。</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- field geometry (field-relative coords, before bench offset) ----------
+  // x: 0-1200 (try line 100 / 1100, 22m 320/880, halfway 600)
+  // y: 0-700  (touchlines 0/700, 5m 50/650, 15m 150/550)
+  var FIELD_TOP = 100;   // where field y=0 sits inside the 0-900 viewBox
+  var FIELD_H   = 700;
+  var BENCH_TOP_Y = 45;
+  var BENCH_BOTTOM_Y = 855;
+
+  function fx(x){ return x; }
+  function fy(y){ return y + FIELD_TOP; }
+
+  function evenLine(nums, x, y0, y1){
+    return nums.map(function(n,i){
+      var y = nums.length===1 ? (y0+y1)/2 : y0 + i*(y1-y0)/(nums.length-1);
+      return {num:n, x:x, y:y};
+    });
+  }
+
+  var FORWARDS = [1,2,3,4,5,6,7,8];
+  var ALL15 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+
+  function benchPositions(nums, yFull){
+    var slots = 15, margin = 55;
+    return nums.map(function(n,i){
+      return {num:n, x: margin + i*((1200-2*margin)/(slots-1)), yFull:yFull};
+    });
+  }
+
+  // ---------- formations ----------
+  var F = {};
+
+  // 1) kickoff
+  (function(){
+    var red = [].concat(
+      evenLine([6,1,2,3,4,5,8,7], 560, 150, 550),
+      [{num:9,x:540,y:350},{num:10,x:600,y:350},{num:12,x:560,y:230},{num:13,x:560,y:470},
+       {num:11,x:590,y:60},{num:14,x:590,y:640},{num:15,x:480,y:350}]
+    );
+    var blue = [].concat(
+      evenLine([1,2,3,4,5,6,7,8], 700, 150, 550),
+      [{num:9,x:680,y:350},{num:10,x:710,y:350},{num:12,x:740,y:270},{num:13,x:740,y:430},
+       {num:11,x:760,y:90},{num:14,x:760,y:610},{num:15,x:820,y:350}]
+    );
+    F.kickoff = {label:"キックオフ", red:red, blue:blue, ball:{x:600,y:350},
+      info:"多くのチームはフォワードを中央にまとめてキックチェイスの網を作り、キッカーと反対側のバックスで浅いキックと深いキックの両方に対応します。レシーブ側はバックスリーを深めに置き、キャッチとカウンターアタックに備えます。"};
+  })();
+
+  // 2) scrum
+  (function(){
+    var red = [
+      {num:1,x:545,y:335},{num:2,x:545,y:350},{num:3,x:545,y:365},
+      {num:4,x:525,y:340},{num:5,x:525,y:360},{num:6,x:505,y:315},{num:7,x:505,y:385},{num:8,x:515,y:350},
+      {num:9,x:565,y:392},
+      {num:10,x:480,y:350},{num:12,x:460,y:260},{num:13,x:460,y:440},
+      {num:11,x:480,y:60},{num:14,x:480,y:640},{num:15,x:420,y:350}
+    ];
+    var blue = [
+      {num:1,x:575,y:365},{num:2,x:575,y:350},{num:3,x:575,y:335},
+      {num:4,x:595,y:360},{num:5,x:595,y:340},{num:6,x:615,y:385},{num:7,x:615,y:315},{num:8,x:605,y:350},
+      {num:9,x:560,y:300},
+      {num:10,x:640,y:350},{num:12,x:660,y:440},{num:13,x:660,y:260},
+      {num:11,x:640,y:640},{num:14,x:640,y:60},{num:15,x:700,y:350}
+    ];
+    F.scrum = {label:"スクラム", red:red, blue:blue, ball:{x:557,y:352},
+      info:"フォワード1〜8番が組み合ってボールを支配し、確実な球出しを狙います。ハーフバックはボールの出どころに合わせて位置を取り、バックスはオフサイドライン（最後尾）の後方でアタック体形を作って待ちます。"};
+  })();
+
+  // 3) lineout
+  (function(){
+    var jumpersR = evenLine([4,7,5,6,8,1,3], 635, 40, 220);
+    var jumpersB = evenLine([4,7,5,6,8,1,3], 665, 40, 220);
+    var red = [].concat(jumpersR, [
+      {num:2,x:615,y:15},{num:9,x:600,y:260},
+      {num:10,x:560,y:350},{num:12,x:540,y:300},{num:13,x:540,y:450},
+      {num:11,x:620,y:650},{num:14,x:500,y:600},{num:15,x:460,y:350}
+    ]);
+    var blue = [].concat(jumpersB, [
+      {num:2,x:685,y:15},{num:9,x:700,y:260},
+      {num:10,x:740,y:350},{num:12,x:760,y:300},{num:13,x:760,y:450},
+      {num:11,x:680,y:650},{num:14,x:800,y:600},{num:15,x:840,y:350}
+    ]);
+    F.lineout = {label:"ラインアウト", red:red, blue:blue, ball:{x:625,y:28},
+      info:"タッチラインに対して直角にフォワードが並び、ジャンパーとリフターの組み合わせで確実なボール確保を狙います。ハーフバックはすぐ内側で待機し、バックスはミッドフィールドに展開して素早い展開攻撃に備えます。"};
+  })();
+
+  // 4) attack pods
+  (function(){
+    var red = [
+      {num:1,x:600,y:340},{num:2,x:606,y:350},{num:3,x:600,y:360},
+      {num:4,x:632,y:300},{num:5,x:632,y:400},
+      {num:6,x:695,y:250},{num:7,x:702,y:452},{num:8,x:682,y:350},
+      {num:9,x:622,y:378},{num:10,x:662,y:378},
+      {num:12,x:702,y:378},{num:13,x:742,y:378},
+      {num:11,x:782,y:80},{num:14,x:782,y:650},{num:15,x:722,y:500}
+    ];
+    var order = [15,11,12,13,10,9,1,2,3,4,5,6,7,8,14];
+    var blue = evenLine(order, 632, 60, 640);
+    F.attack = {label:"アタック（ポッド攻撃）", red:red, blue:blue, ball:{x:604,y:352},
+      info:"ブレイクダウン付近にフォワードの小グループ（ポッド）を配置し、バックスはフラットラインで幅を使います。9番がテンポを作り10番が舵を取り、外側のスペースへボールを運びます。"};
+  })();
+
+  // 5) drift defense
+  (function(){
+    var red = [
+      {num:1,x:600,y:340},{num:2,x:606,y:350},{num:3,x:600,y:360},
+      {num:4,x:634,y:300},{num:5,x:634,y:400},{num:6,x:660,y:270},{num:7,x:660,y:430},{num:8,x:648,y:350},
+      {num:9,x:622,y:378},{num:10,x:662,y:378},{num:12,x:702,y:378},{num:13,x:742,y:378},
+      {num:11,x:782,y:80},{num:14,x:782,y:650},{num:15,x:700,y:500}
+    ];
+    var ys = []; for(var i=0;i<15;i++){ ys.push(60 + i*(580/14)); }
+    var order = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+    var blue = order.map(function(n,i){ return {num:n, x: 610 + (ys[i]-350)*0.16, y: ys[i]}; });
+    F.driftDefense = {label:"ディフェンス（ドリフト）", red:red, blue:blue, ball:{x:604,y:352},
+      info:"内側の選手から順にプレッシャーをかけつつ、外側へ向かって少しずつ下がりながら横にスライドし、相手をタッチライン際の狭いスペースへ追い込みます。"};
+  })();
+
+  // 6) umbrella defense
+  (function(){
+    var red = [
+      {num:1,x:600,y:340},{num:2,x:606,y:350},{num:3,x:600,y:360},
+      {num:4,x:634,y:300},{num:5,x:634,y:400},{num:6,x:660,y:270},{num:7,x:660,y:430},{num:8,x:648,y:350},
+      {num:9,x:622,y:378},{num:10,x:662,y:378},{num:12,x:702,y:378},{num:13,x:742,y:378},
+      {num:11,x:782,y:80},{num:14,x:782,y:650},{num:15,x:700,y:500}
+    ];
+    var ys2 = []; for(var i=0;i<15;i++){ ys2.push(60 + i*(580/14)); }
+    var order2 = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+    var blue = order2.map(function(n,i){ return {num:n, x: 648 - Math.abs(ys2[i]-350)*0.16, y: ys2[i]}; });
+    F.umbrella = {label:"ディフェンス（アンブレラ）", red:red, blue:blue, ball:{x:604,y:352},
+      info:"外側の選手が前に出て弧を描くように圧力をかけ、相手の外へのパスコースを消しながら内側へ押し込みます。ラインブレイクを許さない代わりに、内側にはギャップが生まれやすい体形です。"};
+  })();
+
+  // 7) 22m dropout
+  (function(){
+    var blue = [].concat(
+      evenLine([6,1,2,3,4,5,8,7], 860, 150, 550),
+      [{num:9,x:880,y:350},{num:10,x:900,y:350},{num:12,x:860,y:230},{num:13,x:860,y:470},
+       {num:11,x:870,y:60},{num:14,x:870,y:640},{num:15,x:940,y:350}]
+    );
+    var red = [].concat(
+      evenLine([1,2,3,4,5,6,7,8], 800, 150, 550),
+      [{num:9,x:820,y:330},{num:10,x:840,y:370},{num:12,x:780,y:270},{num:13,x:780,y:430},
+       {num:11,x:760,y:90},{num:14,x:760,y:610},{num:15,x:700,y:350}]
+    );
+    F.dropout22 = {label:"22mドロップアウト", red:red, blue:blue, ball:{x:900,y:350},
+      info:"ディフェンス側（青）が自陣22m線の内側からドロップキックでリスタートします。キッキングチームはキックチェイスの体形を作り、レシーブ側は規定の間隔を空けてキャッチと展開に備えます。"};
+  })();
+
+  var FORMATION_ORDER = ["kickoff","scrum","lineout","attack","driftDefense","umbrella","dropout22"];
+
+  // ---------- build DOM: field lines ----------
+  var fieldSvg = document.querySelector(".field-svg");
+  (function drawField(){
+    var ns = "http://www.w3.org/2000/svg";
+    function line(x1,y1,x2,y2,opts){
+      var el = document.createElementNS(ns,"line");
+      el.setAttribute("x1",x1); el.setAttribute("y1",y1);
+      el.setAttribute("x2",x2); el.setAttribute("y2",y2);
+      el.setAttribute("stroke", (opts&&opts.stroke)||"#f4f6f0");
+      el.setAttribute("stroke-width",(opts&&opts.w)||3);
+      if(opts && opts.dash) el.setAttribute("stroke-dasharray",opts.dash);
+      el.setAttribute("stroke-opacity",(opts&&opts.op)!=null?opts.op:0.9);
+      fieldSvg.appendChild(el);
+    }
+    function rect(x,y,w,h,opts){
+      var el = document.createElementNS(ns,"rect");
+      el.setAttribute("x",x); el.setAttribute("y",y);
+      el.setAttribute("width",w); el.setAttribute("height",h);
+      el.setAttribute("fill",(opts&&opts.fill)||"none");
+      el.setAttribute("stroke",(opts&&opts.stroke)||"none");
+      if(opts&&opts.strokeW) el.setAttribute("stroke-width",opts.strokeW);
+      fieldSvg.appendChild(el);
+    }
+    // benches
+    rect(0,0,1200,90,{fill:"rgba(255,255,255,.035)"});
+    rect(0,810,1200,90,{fill:"rgba(255,255,255,.035)"});
+    // pitch base + in-goal shading
+    rect(0,100,1200,700,{fill:"var(--turf-1,#1f6b3a)"});
+    rect(0,100,100,700,{fill:"rgba(0,0,0,.16)"});
+    rect(1100,100,100,700,{fill:"rgba(0,0,0,.16)"});
+    // subtle mow stripes every 100 (10m)
+    for(var sx=100; sx<=1100; sx+=100){
+      rect(sx,100, (sx/100)%2===0?100:0,0,{}); // no-op guard (kept simple, stripes below)
+    }
+    for(var sxi=0; sxi<10; sxi++){
+      if(sxi%2===0){
+        rect(100+sxi*100,100,100,700,{fill:"rgba(255,255,255,.025)"});
+      }
+    }
+    // touchlines & dead ball lines
+    line(0,100,1200,100,{w:4});
+    line(0,800,1200,800,{w:4});
+    line(0,100,0,800,{w:4});
+    line(1200,100,1200,800,{w:4});
+    // try lines
+    line(100,100,100,800,{w:4});
+    line(1100,100,1100,800,{w:4});
+    // 5m lines (dashed, vertical)
+    line(150,100,150,800,{w:2,dash:"6,10",op:.55});
+    line(1050,100,1050,800,{w:2,dash:"6,10",op:.55});
+    // 22m lines
+    line(320,100,320,800,{w:3});
+    line(880,100,880,800,{w:3});
+    // halfway
+    line(600,100,600,800,{w:3});
+    // 10m lines (dashed)
+    line(500,100,500,800,{w:2,dash:"6,10",op:.55});
+    line(700,100,700,800,{w:2,dash:"6,10",op:.55});
+    // 5m / 15m from touch (horizontal, dashed) across field
+    [150,650].forEach(function(yy){ line(100,fy2(yy),1100,fy2(yy),{w:1.5,dash:"5,9",op:.35}); });
+    [50,150,550,650].forEach(function(yy){}); // reserved
+    function fy2(y){ return y+100; }
+    line(100,150,1100,150,{w:1.5,dash:"5,9",op:.35});
+    line(100,650,1100,650,{w:1.5,dash:"5,9",op:.35});
+    line(100,250,1100,250,{w:1,dash:"3,8",op:.18});
+  })();
+
+  // ---------- tokens ----------
+  var tokensLayer = document.getElementById("tokensLayer");
+  var boardWrap = document.getElementById("boardWrap");
+  var tokenEls = {}; // key -> element
+  var state = { red:{}, blue:{}, ball:{x:600,y:450} }; // x,y in full 0-1200 / 0-900 coords
+
+  var overrides = {};          // builtin formation name -> {red,blue,ball} (edited version)
+  var freeformSnapshot = null; // {state:{red,blue,ball}} for the bench/freeform slot
+  var currentFormationKey = "kickoff"; // builtin name | "custom-<id>" | "" (freeform)
+
+  function buildSnapshotArrays(){
+    return {
+      red: ALL15.map(function(n){ return {num:n, x:state.red[n].x, y:state.red[n].y}; }),
+      blue: ALL15.map(function(n){ return {num:n, x:state.blue[n].x, y:state.blue[n].y}; }),
+      ball: {x:state.ball.x, y:state.ball.y}
+    };
+  }
+
+  function makeToken(key, team, num){
+    var el = document.createElement("div");
+    el.className = "token team-"+team;
+    el.textContent = num;
+    el.dataset.key = key;
+    el.setAttribute("role","img");
+    el.setAttribute("aria-label",(team==="red"?"レッド":"ブルー")+" "+num+"番");
+    tokensLayer.appendChild(el);
+    attachDrag(el, key);
+    tokenEls[key] = el;
+    return el;
+  }
+
+  ALL15.forEach(function(n){
+    makeToken("red-"+n, "red", n);
+    makeToken("blue-"+n, "blue", n);
+  });
+  var ballEl = document.createElement("div");
+  ballEl.className = "token ball";
+  ballEl.dataset.key = "ball";
+  ballEl.setAttribute("aria-label","ボール");
+  tokensLayer.appendChild(ballEl);
+  attachDrag(ballEl, "ball");
+  tokenEls.ball = ballEl;
+
+  function setPos(key, x, yFull){
+    var el = tokenEls[key];
+    el.style.left = (x/1200*100)+"%";
+    el.style.top = (yFull/900*100)+"%";
+    if(key==="ball"){ state.ball = {x:x,y:yFull}; }
+    else {
+      var parts = key.split("-"); state[parts[0]][parts[1]] = {x:x,y:yFull};
+    }
+  }
+
+  function applyFormation(name){
+    var f = F[name];
+    if(!f) return;
+    clearSelection();
+    var ov = overrides[name];
+    if(ov){
+      ov.red.forEach(function(p){ setPos("red-"+p.num, p.x, p.y); });
+      ov.blue.forEach(function(p){ setPos("blue-"+p.num, p.x, p.y); });
+      setPos("ball", ov.ball.x, ov.ball.y);
+    } else {
+      f.red.forEach(function(p){ setPos("red-"+p.num, p.x, fy(p.y)); });
+      f.blue.forEach(function(p){ setPos("blue-"+p.num, p.x, fy(p.y)); });
+      setPos("ball", f.ball.x, fy(f.ball.y));
+    }
+    currentFormationKey = name;
+    document.getElementById("infoBlurb").innerHTML = "<b>"+f.label+"：</b>"+f.info +
+      (ov ? "<br><span style='opacity:.75'>（この端末・アカウントで保存した編集済みの配置を表示中）</span>" : "");
+    updateFormationButtons();
+  }
+
+  function goToBench(){
+    clearSelection();
+    var red = benchPositions(ALL15, BENCH_BOTTOM_Y);
+    var blue = benchPositions(ALL15, BENCH_TOP_Y);
+    red.forEach(function(p){ setPos("red-"+p.num, p.x, p.yFull); });
+    blue.forEach(function(p){ setPos("blue-"+p.num, p.x, p.yFull); });
+    setPos("ball", 600, BENCH_TOP_Y);
+    currentFormationKey = "";
+    select.value = "";
+    document.getElementById("infoBlurb").innerHTML = "<b>ベンチ：</b>コマをドラッグしてフィールドに自由に配置し、独自の戦術を組み立てられます。";
+    updateFormationButtons();
+  }
+
+  // ---------- selection (multi-select) ----------
+  var selectedKeys = {};
+  function toggleSelect(key){
+    if(selectedKeys[key]){ delete selectedKeys[key]; } else { selectedKeys[key] = true; }
+    updateSelectionVisuals();
+  }
+  function clearSelection(){
+    selectedKeys = {};
+    updateSelectionVisuals();
+  }
+  function updateSelectionVisuals(){
+    Object.keys(tokenEls).forEach(function(k){
+      tokenEls[k].classList.toggle("selected", !!selectedKeys[k]);
+    });
+  }
+  document.getElementById("clearSelectionBtn").addEventListener("click", clearSelection);
+  boardWrap.addEventListener("pointerdown", function(ev){
+    if(boardWrap.classList.contains("draw-mode") || isPlaying) return;
+    if(!ev.target.closest || !ev.target.closest(".token")) clearSelection();
+  });
+
+  // ---------- drag (tap = select, drag = move one or the whole selected group) ----------
+  var DRAG_THRESHOLD = 6; // px, screen space
+  function attachDrag(el, key){
+    el.addEventListener("pointerdown", function(ev){
+      if(boardWrap.classList.contains("draw-mode") || isPlaying) return;
+      ev.preventDefault();
+      el.setPointerCapture(ev.pointerId);
+      var startClientX = ev.clientX, startClientY = ev.clientY;
+      var dragging = false;
+      var groupKeys = null;
+      var groupStart = null;
+
+      function toBoard(e){
+        var rect = boardWrap.getBoundingClientRect();
+        var xPct = Math.min(100, Math.max(0, (e.clientX-rect.left)/rect.width*100));
+        var yPct = Math.min(100, Math.max(0, (e.clientY-rect.top)/rect.height*100));
+        return { x: xPct/100*1200, y: yPct/100*900 };
+      }
+      var startBoard = toBoard(ev);
+
+      function beginDrag(){
+        dragging = true;
+        el.classList.add("dragging");
+        groupKeys = (selectedKeys[key] && Object.keys(selectedKeys).length > 1) ? Object.keys(selectedKeys) : [key];
+        groupStart = {};
+        groupKeys.forEach(function(k){
+          var p = (k==="ball") ? state.ball : state[k.split("-")[0]][k.split("-")[1]];
+          groupStart[k] = { x:p.x, y:p.y };
+        });
+      }
+
+      function move(e){
+        var cur = toBoard(e);
+        if(!dragging){
+          if(Math.hypot(e.clientX-startClientX, e.clientY-startClientY) < DRAG_THRESHOLD) return;
+          beginDrag();
+        }
+        var dx = cur.x - startBoard.x, dy = cur.y - startBoard.y;
+        groupKeys.forEach(function(k){
+          var base = groupStart[k];
+          setPos(k, Math.min(1200,Math.max(0,base.x+dx)), Math.min(900,Math.max(0,base.y+dy)));
+        });
+      }
+      function onMove(e){ move(e); }
+      function onUp(e){
+        el.classList.remove("dragging");
+        el.removeEventListener("pointermove", onMove);
+        el.removeEventListener("pointerup", onUp);
+        el.removeEventListener("pointercancel", onUp);
+        if(!dragging){
+          toggleSelect(key);
+        }
+      }
+      el.addEventListener("pointermove", onMove);
+      el.addEventListener("pointerup", onUp);
+      el.addEventListener("pointercancel", onUp);
+    });
+  }
+
+  // ---------- movement recording & playback ----------
+  // Recording stores plain keyframe snapshots only (no timing baked in).
+  // Timing between keyframes is computed from the board's real-world scale
+  // and a standard running pace, so it can be recomputed at any time (e.g.
+  // if the pace is adjusted later, even for an already-saved recording).
+  var UNITS_PER_METER = 10; // 1000 board units = 100m tries-to-tries, and 700 units = 70m touchline-to-touchline
+  var isRecording = false, isPlaying = false;
+  var recordKeyframes = []; // [snap, snap, ...] while actively recording
+  var recordings = {}; // id -> {id, name, keyframes:[snap,...]}
+  var activeRecordingKeyframes = null, activeRecordingLabel = "", activeRecordingId = null;
+  var playStartPerf = 0, playSpeed = 1, playRafId = null, playFrames = null;
+  var paceSecPer100m = 12;
+
+  function snapshotState(){
+    var red={}, blue={};
+    ALL15.forEach(function(n){ red[n]={x:state.red[n].x,y:state.red[n].y}; blue[n]={x:state.blue[n].x,y:state.blue[n].y}; });
+    return { red:red, blue:blue, ball:{x:state.ball.x,y:state.ball.y} };
+  }
+
+  function snapsEqual(a,b){
+    for(var n=1;n<=15;n++){
+      if(Math.abs(a.red[n].x-b.red[n].x)>0.5 || Math.abs(a.red[n].y-b.red[n].y)>0.5) return false;
+      if(Math.abs(a.blue[n].x-b.blue[n].x)>0.5 || Math.abs(a.blue[n].y-b.blue[n].y)>0.5) return false;
+    }
+    if(Math.abs(a.ball.x-b.ball.x)>0.5 || Math.abs(a.ball.y-b.ball.y)>0.5) return false;
+    return true;
+  }
+
+  // Duration of one keyframe-to-keyframe segment: how long the farthest-running
+  // player (not the ball — a pass/kick isn't bound to running pace) would take
+  // to cover their distance at the standard pace, so everyone arrives together.
+  function segmentDurationMs(a,b){
+    var maxUnits = 0;
+    for(var n=1;n<=15;n++){
+      maxUnits = Math.max(maxUnits, Math.hypot(b.red[n].x-a.red[n].x, b.red[n].y-a.red[n].y));
+      maxUnits = Math.max(maxUnits, Math.hypot(b.blue[n].x-a.blue[n].x, b.blue[n].y-a.blue[n].y));
+    }
+    var meters = maxUnits / UNITS_PER_METER;
+    var speedMps = 100 / Math.max(1, paceSecPer100m);
+    return (meters / speedMps) * 1000;
+  }
+
+  function buildTimedFrames(keyframes){
+    var frames = [{ t:0, snap: keyframes[0] }];
+    var t = 0;
+    for(var i=1;i<keyframes.length;i++){
+      t += segmentDurationMs(keyframes[i-1], keyframes[i]);
+      frames.push({ t:t, snap: keyframes[i] });
+    }
+    return frames;
+  }
+
+  function estimatedDurationSec(keyframes){
+    if(!keyframes || keyframes.length<2) return 0;
+    var frames = buildTimedFrames(keyframes);
+    return frames[frames.length-1].t/1000;
+  }
+
+  function updateRecUI(){
+    var statusEl = document.getElementById("recStatus");
+    if(isRecording){
+      statusEl.textContent = "● 録画中（キーフレーム "+recordKeyframes.length+" 個）。プレーヤーを動かして「Ⅱ キーフレーム」で区切ってください。";
+    } else if(activeRecordingKeyframes && activeRecordingKeyframes.length){
+      var dur = estimatedDurationSec(activeRecordingKeyframes).toFixed(1);
+      statusEl.textContent = "選択中: " + activeRecordingLabel + "（キーフレーム"+activeRecordingKeyframes.length+"個・推定"+dur+"秒）";
+    } else {
+      statusEl.textContent = "録画していません";
+    }
+    document.getElementById("recStartBtn").disabled = isRecording;
+    document.getElementById("recPauseBtn").disabled = !isRecording;
+    document.getElementById("recStopBtn").disabled = !isRecording;
+    document.getElementById("recDeleteBtn").style.display = (activeRecordingId && recordings[activeRecordingId]) ? "" : "none";
+    document.getElementById("playBtn").disabled = !(activeRecordingKeyframes && activeRecordingKeyframes.length>=2) || isRecording;
+  }
+
+  document.getElementById("recStartBtn").addEventListener("click", function(){
+    if(isPlaying) stopPlayback();
+    clearSelection();
+    isRecording = true;
+    recordKeyframes = [snapshotState()];
+    updateRecUI();
+    flashInfo("録画を開始しました。プレーヤーを動かしてから「Ⅱ キーフレーム」を押してください。");
+  });
+
+  document.getElementById("recPauseBtn").addEventListener("click", function(){
+    if(!isRecording) return;
+    var snap = snapshotState();
+    var last = recordKeyframes[recordKeyframes.length-1];
+    if(snapsEqual(last, snap)){
+      flashInfo("前のキーフレームから動きがないため、追加されませんでした。プレーヤーを動かしてからもう一度押してください。");
+      return;
+    }
+    recordKeyframes.push(snap);
+    updateRecUI();
+    flashInfo("キーフレームを追加しました（"+(recordKeyframes.length-1)+"個目の区切り）。続けて動かすか、「■ 録画終了」を押してください。");
+  });
+
+  document.getElementById("recStopBtn").addEventListener("click", function(){
+    if(!isRecording) return;
+    var snap = snapshotState();
+    var last = recordKeyframes[recordKeyframes.length-1];
+    if(!snapsEqual(last, snap)) recordKeyframes.push(snap);
+    isRecording = false;
+    if(recordKeyframes.length < 2){
+      flashInfo("記録された動きがありませんでした。プレーヤーを動かしてから「Ⅱ キーフレーム」で区切ってください。");
+      activeRecordingKeyframes = null; activeRecordingLabel = ""; activeRecordingId = null;
+    } else {
+      activeRecordingKeyframes = recordKeyframes.slice();
+      activeRecordingLabel = "未保存の録画";
+      activeRecordingId = null;
+      document.getElementById("recordingSelect").value = "";
+      var secs = estimatedDurationSec(activeRecordingKeyframes).toFixed(1);
+      flashInfo("録画を終了しました（キーフレーム"+activeRecordingKeyframes.length+"個・推定"+secs+"秒）。「▶ 再生」で確認するか、名前を付けて保存できます。");
+    }
+    updateRecUI();
+  });
+
+  function rebuildRecordingSelect(){
+    var sel = document.getElementById("recordingSelect");
+    sel.innerHTML = "";
+    var ids = Object.keys(recordings);
+    if(!ids.length){
+      var opt0 = document.createElement("option");
+      opt0.value = ""; opt0.textContent = "（保存された録画はありません）";
+      sel.appendChild(opt0);
+      return;
+    }
+    var placeholder = document.createElement("option");
+    placeholder.value = ""; placeholder.textContent = "録画を選択...";
+    sel.appendChild(placeholder);
+    ids.forEach(function(id){
+      var opt = document.createElement("option");
+      opt.value = id; opt.textContent = recordings[id].name;
+      sel.appendChild(opt);
+    });
+    sel.value = activeRecordingId || "";
+  }
+
+  document.getElementById("recordingSelect").addEventListener("change", function(){
+    var id = this.value;
+    if(!id || !recordings[id]) return;
+    activeRecordingId = id;
+    activeRecordingKeyframes = recordings[id].keyframes;
+    activeRecordingLabel = recordings[id].name;
+    updateRecUI();
+  });
+
+  document.getElementById("recSaveBtn").addEventListener("click", function(){
+    if(!activeRecordingKeyframes || activeRecordingKeyframes.length<2){ flashInfo("保存できる録画がありません。まず「● 録画開始」で記録してください。"); return; }
+    var name = prompt("録画の名前を入力してください（例：キックオフからのカウンター）");
+    if(!name) return;
+    var id = "r"+Date.now();
+    recordings[id] = { id:id, name:name, keyframes: activeRecordingKeyframes };
+    activeRecordingId = id;
+    activeRecordingLabel = name;
+    rebuildRecordingSelect();
+    updateRecUI();
+    persistToLocalStorage();
+    flashInfo("「"+name+"」として保存しました。他の端末でも使うには「クラウドに保存」を押してください。");
+    if(cloudUser) saveCloud(true);
+  });
+
+  document.getElementById("recDeleteBtn").addEventListener("click", function(){
+    var id = activeRecordingId;
+    if(!id || !recordings[id]) return;
+    var name = recordings[id].name;
+    if(!confirm("「"+name+"」を削除しますか？")) return;
+    delete recordings[id];
+    activeRecordingId = null; activeRecordingKeyframes = null; activeRecordingLabel = "";
+    rebuildRecordingSelect();
+    updateRecUI();
+    persistToLocalStorage();
+    if(cloudUser) saveCloud(true);
+  });
+
+  function applySnap(snap){
+    ALL15.forEach(function(n){
+      setPos("red-"+n, snap.red[n].x, snap.red[n].y);
+      setPos("blue-"+n, snap.blue[n].x, snap.blue[n].y);
+    });
+    setPos("ball", snap.ball.x, snap.ball.y);
+  }
+  function applyInterpolatedSnap(a,b,t){
+    ALL15.forEach(function(n){
+      setPos("red-"+n, a.red[n].x+(b.red[n].x-a.red[n].x)*t, a.red[n].y+(b.red[n].y-a.red[n].y)*t);
+      setPos("blue-"+n, a.blue[n].x+(b.blue[n].x-a.blue[n].x)*t, a.blue[n].y+(b.blue[n].y-a.blue[n].y)*t);
+    });
+    setPos("ball", a.ball.x+(b.ball.x-a.ball.x)*t, a.ball.y+(b.ball.y-a.ball.y)*t);
+  }
+
+  function startPlayback(){
+    if(!activeRecordingKeyframes || activeRecordingKeyframes.length<2){ flashInfo("再生できる録画がありません。"); return; }
+    if(isPlaying) stopPlayback();
+    clearSelection();
+    playFrames = buildTimedFrames(activeRecordingKeyframes); // recomputed now, so the current pace always applies
+    isPlaying = true;
+    boardWrap.classList.add("playing");
+    playStartPerf = performance.now();
+    updateRecUI();
+    playStep();
+  }
+  function playStep(){
+    if(!isPlaying) return;
+    var frames = playFrames;
+    var elapsed = (performance.now() - playStartPerf) * playSpeed;
+    var duration = frames[frames.length-1].t;
+    if(elapsed >= duration){
+      applySnap(frames[frames.length-1].snap);
+      finishPlayback();
+      return;
+    }
+    var i = 0;
+    while(i < frames.length-2 && frames[i+1].t <= elapsed) i++;
+    var a = frames[i], b = frames[Math.min(i+1, frames.length-1)];
+    var span = Math.max(1, b.t - a.t);
+    var localT = Math.min(1, Math.max(0, (elapsed - a.t) / span));
+    applyInterpolatedSnap(a.snap, b.snap, localT);
+    playRafId = requestAnimationFrame(playStep);
+  }
+  function finishPlayback(){
+    isPlaying = false;
+    boardWrap.classList.remove("playing");
+    if(playRafId){ cancelAnimationFrame(playRafId); playRafId = null; }
+    updateRecUI();
+  }
+  function stopPlayback(){ finishPlayback(); }
+
+  document.getElementById("playBtn").addEventListener("click", startPlayback);
+  document.getElementById("stopPlayBtn").addEventListener("click", stopPlayback);
+  document.getElementById("speedSelect").addEventListener("change", function(){
+    playSpeed = parseFloat(this.value) || 1;
+  });
+  document.getElementById("paceInput").addEventListener("change", function(){
+    var v = parseFloat(this.value);
+    paceSecPer100m = (v && v > 0) ? v : 12;
+    this.value = paceSecPer100m;
+    updateRecUI();
+  });
+
+  // ---------- formation select ----------
+  var select = document.getElementById("formationSelect");
+  var blankOpt = document.createElement("option");
+  blankOpt.value = ""; blankOpt.textContent = "（自由配置）";
+  select.appendChild(blankOpt);
+  FORMATION_ORDER.forEach(function(key){
+    var opt = document.createElement("option");
+    opt.value = key; opt.textContent = F[key].label;
+    select.appendChild(opt);
+  });
+  select.addEventListener("change", function(){
+    var v = select.value;
+    if(v === ""){
+      if(freeformSnapshot){
+        freeformSnapshot.red.forEach(function(p){ setPos("red-"+p.num, p.x, p.y); });
+        freeformSnapshot.blue.forEach(function(p){ setPos("blue-"+p.num, p.x, p.y); });
+        setPos("ball", freeformSnapshot.ball.x, freeformSnapshot.ball.y);
+      }
+      currentFormationKey = "";
+      document.getElementById("infoBlurb").innerHTML = "<b>自由配置：</b>コマをドラッグして独自の配置を作れます。";
+    } else if(v.indexOf("custom-")===0){
+      var f = customFormations[v.slice(7)];
+      if(f) applyCustomFormation(f);
+    } else {
+      applyFormation(v);
+    }
+    updateFormationButtons();
+  });
+
+  function updateFormationButtons(){
+    var delBtn = document.getElementById("deleteFormationBtn");
+    var resetBtn = document.getElementById("resetOverrideBtn");
+    if(currentFormationKey.indexOf("custom-")===0){
+      delBtn.style.display = "";
+      resetBtn.style.display = "none";
+    } else if(F[currentFormationKey]){
+      delBtn.style.display = "none";
+      resetBtn.style.display = overrides[currentFormationKey] ? "" : "none";
+    } else {
+      delBtn.style.display = "none";
+      resetBtn.style.display = "none";
+    }
+  }
+
+  document.getElementById("resetOverrideBtn").addEventListener("click", function(){
+    if(!F[currentFormationKey]) return;
+    if(!confirm("「"+F[currentFormationKey].label+"」の編集内容を破棄して標準配置に戻しますか？")) return;
+    delete overrides[currentFormationKey];
+    persistToLocalStorage();
+    applyFormation(currentFormationKey);
+  });
+
+  document.getElementById("clearBenchBtn").addEventListener("click", goToBench);
+
+  // ---------- custom (user-added) formations ----------
+  var customFormations = {}; // id -> {id,name,red:[{num,x,y}],blue:[...],ball:{x,y}}
+
+  function rebuildFormationSelect(){
+    var og = select.querySelector('optgroup[data-custom]');
+    if(og) og.remove();
+    var ids = Object.keys(customFormations);
+    if(!ids.length) return;
+    var group = document.createElement("optgroup");
+    group.label = "マイフォーメーション";
+    group.setAttribute("data-custom","1");
+    ids.forEach(function(id){
+      var opt = document.createElement("option");
+      opt.value = "custom-"+id;
+      opt.textContent = customFormations[id].name;
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  }
+
+  function applyCustomFormation(f){
+    clearSelection();
+    f.red.forEach(function(p){ setPos("red-"+p.num, p.x, p.y); });
+    f.blue.forEach(function(p){ setPos("blue-"+p.num, p.x, p.y); });
+    setPos("ball", f.ball.x, f.ball.y);
+    currentFormationKey = "custom-"+f.id;
+    document.getElementById("infoBlurb").innerHTML = "<b>"+f.name+"（マイフォーメーション）</b>";
+    updateFormationButtons();
+  }
+
+  document.getElementById("addFormationBtn").addEventListener("click", function(){
+    var name = prompt("フォーメーション名を入力してください（例：モール攻撃、ショートキックオフ 等）");
+    if(!name) return;
+    var id = "f"+Date.now();
+    var snap = buildSnapshotArrays();
+    customFormations[id] = { id:id, name:name, red:snap.red, blue:snap.blue, ball:snap.ball };
+    currentFormationKey = "custom-"+id;
+    rebuildFormationSelect();
+    select.value = "custom-"+id;
+    updateFormationButtons();
+    persistToLocalStorage();
+    flashInfo("「"+name+"」をマイフォーメーションに追加し、この端末に保存しました。他の端末でも使うには「クラウドに保存」を押してください。");
+    if(cloudUser) saveCloud(true);
+  });
+
+  document.getElementById("deleteFormationBtn").addEventListener("click", function(){
+    var v = select.value;
+    if(v.indexOf("custom-")!==0) return;
+    var id = v.slice(7);
+    var name = customFormations[id] ? customFormations[id].name : "";
+    if(!confirm("「"+name+"」を削除しますか？")) return;
+    delete customFormations[id];
+    rebuildFormationSelect();
+    select.value = "kickoff";
+    persistToLocalStorage();
+    applyFormation("kickoff");
+    if(cloudUser) saveCloud(true);
+  });
+
+  // ---------- Netlify Identity (email authentication) ----------
+  // Actual login/signup/logout wiring lives in the <script type="module"> block
+  // at the bottom of the page (it needs `import` for @netlify/identity). This
+  // part just tracks whether someone is logged in and talks to /api/state.
+  var cloudUser = null;
+  var API_STATE = "/api/state";
+
+  function refreshAuthUI(){
+    var statusEl = document.getElementById("authStatus");
+    var loginBtn = document.getElementById("loginBtn");
+    var logoutBtn = document.getElementById("logoutBtn");
+    if(cloudUser){
+      statusEl.textContent = (cloudUser.email||"ログイン中") + " でログイン中";
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "";
+    } else {
+      statusEl.textContent = "未ログイン（クラウド保存にはログインが必要です）";
+      loginBtn.style.display = "";
+      logoutBtn.style.display = "none";
+    }
+  }
+
+  function currentBoardPayload(){
+    return { overrides: overrides, customFormations: customFormations, freeformSnapshot: freeformSnapshot, arrows: arrows, recordings: recordings };
+  }
+
+  async function loadCloud(silent){
+    if(!cloudUser){ if(!silent) flashInfo("クラウド読込にはログインが必要です。"); return; }
+    try{
+      var res = await fetch(API_STATE);
+      if(res.status === 401){ cloudUser = null; refreshAuthUI(); throw new Error("not logged in"); }
+      if(!res.ok) throw new Error("load failed");
+      var data = await res.json();
+      overrides = data.overrides || {};
+      customFormations = data.customFormations || {};
+      freeformSnapshot = data.freeformSnapshot || null;
+      arrows = data.arrows || [];
+      recordings = data.recordings || {};
+      activeRecordingId = null; activeRecordingKeyframes = null; activeRecordingLabel = "";
+      rebuildFormationSelect();
+      rebuildRecordingSelect();
+      renderArrows();
+      reapplyCurrent();
+      updateRecUI();
+      if(!silent) flashInfo("クラウドの内容を読み込みました。");
+    }catch(e){
+      if(!silent) flashInfo("クラウド読込でエラーが発生しました。時間をおいて再度お試しください。");
+    }
+  }
+
+  async function saveCloud(silent){
+    if(!cloudUser){ if(!silent) flashInfo("クラウド保存にはログインが必要です。"); return; }
+    captureCurrentIntoTarget();
+    try{
+      var res = await fetch(API_STATE, {
+        method:"PUT",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(currentBoardPayload())
+      });
+      if(res.status === 401){ cloudUser = null; refreshAuthUI(); throw new Error("not logged in"); }
+      if(!res.ok) throw new Error("save failed");
+      persistToLocalStorage();
+      updateFormationButtons();
+      if(!silent) flashInfo("クラウドに保存しました。ログインすればどの端末からでも呼び出せます。");
+    }catch(e){
+      if(!silent) flashInfo("クラウド保存でエラーが発生しました。時間をおいて再度お試しください。");
+    }
+  }
+
+  document.getElementById("cloudSaveBtn").addEventListener("click", function(){ saveCloud(false); });
+  document.getElementById("cloudLoadBtn").addEventListener("click", function(){ loadCloud(false); });
+
+  // ---------- arrows ----------
+  var arrowLayer = document.getElementById("arrowLayer");
+  var arrows = [];
+  var currentColor = "#c0392b";
+  document.querySelectorAll(".swatch").forEach(function(sw){
+    sw.addEventListener("click", function(){
+      document.querySelectorAll(".swatch").forEach(function(s){ s.classList.remove("active"); });
+      sw.classList.add("active");
+      currentColor = sw.dataset.color;
+    });
+  });
+
+  function colorKey(c){ return c.replace("#",""); }
+
+  function renderArrows(){
+    var ns = "http://www.w3.org/2000/svg";
+    Array.from(arrowLayer.querySelectorAll("line.arrow")).forEach(function(l){ l.remove(); });
+    arrows.forEach(function(a){
+      var l = document.createElementNS(ns,"line");
+      l.setAttribute("class","arrow");
+      l.setAttribute("x1",a.x1); l.setAttribute("y1",a.y1);
+      l.setAttribute("x2",a.x2); l.setAttribute("y2",a.y2);
+      l.setAttribute("stroke",a.color);
+      l.setAttribute("stroke-width",7);
+      l.setAttribute("stroke-linecap","round");
+      l.setAttribute("marker-end","url(#head-"+colorKey(a.color)+")");
+      arrowLayer.appendChild(l);
+    });
+  }
+
+  var drawModeBtn = document.getElementById("drawModeBtn");
+  drawModeBtn.addEventListener("click", function(){
+    boardWrap.classList.toggle("draw-mode");
+    drawModeBtn.classList.toggle("on");
+  });
+
+  var tempLine = null;
+  arrowLayer.addEventListener("pointerdown", function(ev){
+    if(!boardWrap.classList.contains("draw-mode")) return;
+    var rect = boardWrap.getBoundingClientRect();
+    var startX = (ev.clientX-rect.left)/rect.width*1200;
+    var startY = (ev.clientY-rect.top)/rect.height*900;
+    var ns = "http://www.w3.org/2000/svg";
+    tempLine = document.createElementNS(ns,"line");
+    tempLine.setAttribute("x1",startX); tempLine.setAttribute("y1",startY);
+    tempLine.setAttribute("x2",startX); tempLine.setAttribute("y2",startY);
+    tempLine.setAttribute("stroke",currentColor);
+    tempLine.setAttribute("stroke-width",7);
+    tempLine.setAttribute("stroke-linecap","round");
+    tempLine.setAttribute("stroke-dasharray","2,10");
+    arrowLayer.appendChild(tempLine);
+    arrowLayer.setPointerCapture(ev.pointerId);
+
+    function onMove(e){
+      var r = boardWrap.getBoundingClientRect();
+      var x = (e.clientX-r.left)/r.width*1200;
+      var y = (e.clientY-r.top)/r.height*900;
+      tempLine.setAttribute("x2",x); tempLine.setAttribute("y2",y);
+    }
+    function onUp(e){
+      var r = boardWrap.getBoundingClientRect();
+      var x2 = (e.clientX-r.left)/r.width*1200;
+      var y2 = (e.clientY-r.top)/r.height*900;
+      arrowLayer.removeEventListener("pointermove", onMove);
+      arrowLayer.removeEventListener("pointerup", onUp);
+      if(tempLine){ tempLine.remove(); tempLine=null; }
+      var dist = Math.hypot(x2-startX, y2-(startY));
+      if(dist > 8){
+        arrows.push({x1:startX,y1:startY,x2:x2,y2:y2,color:currentColor});
+        renderArrows();
+      }
+    }
+    arrowLayer.addEventListener("pointermove", onMove);
+    arrowLayer.addEventListener("pointerup", onUp);
+  });
+
+  document.getElementById("undoArrowBtn").addEventListener("click", function(){
+    arrows.pop(); renderArrows();
+  });
+  document.getElementById("clearArrowsBtn").addEventListener("click", function(){
+    arrows = []; renderArrows();
+  });
+
+  // ---------- save / load (per-device, localStorage) ----------
+  var LS_KEY = "rugby-tactics-board-v2";
+
+  function captureCurrentIntoTarget(){
+    var snap = buildSnapshotArrays();
+    if(F[currentFormationKey]){
+      overrides[currentFormationKey] = snap;
+    } else if(currentFormationKey && currentFormationKey.indexOf("custom-")===0){
+      var id = currentFormationKey.slice(7);
+      if(customFormations[id]){
+        customFormations[id].red = snap.red;
+        customFormations[id].blue = snap.blue;
+        customFormations[id].ball = snap.ball;
+      }
+    } else {
+      freeformSnapshot = snap;
+    }
+  }
+
+  function persistToLocalStorage(){
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        overrides: overrides,
+        customFormations: customFormations,
+        freeformSnapshot: freeformSnapshot,
+        arrows: arrows,
+        recordings: recordings
+      }));
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function reapplyCurrent(){
+    if(F[currentFormationKey]){
+      applyFormation(currentFormationKey);
+    } else if(currentFormationKey && currentFormationKey.indexOf("custom-")===0){
+      var id = currentFormationKey.slice(7);
+      if(customFormations[id]) applyCustomFormation(customFormations[id]);
+    } else if(freeformSnapshot){
+      freeformSnapshot.red.forEach(function(p){ setPos("red-"+p.num, p.x, p.y); });
+      freeformSnapshot.blue.forEach(function(p){ setPos("blue-"+p.num, p.x, p.y); });
+      setPos("ball", freeformSnapshot.ball.x, freeformSnapshot.ball.y);
+    }
+    updateFormationButtons();
+  }
+
+  document.getElementById("saveBtn").addEventListener("click", function(){
+    captureCurrentIntoTarget();
+    if(persistToLocalStorage()){
+      updateFormationButtons();
+      flashInfo("この端末に保存しました。同じフォーメーションを選ぶと、この編集内容が使われます。");
+    } else {
+      flashInfo("保存に失敗しました（この端末では保存機能が使えない可能性があります）。");
+    }
+  });
+
+  document.getElementById("loadBtn").addEventListener("click", function(){
+    try{
+      var raw = localStorage.getItem(LS_KEY);
+      if(!raw){ flashInfo("この端末に保存されたデータが見つかりませんでした。"); return; }
+      var data = JSON.parse(raw);
+      overrides = data.overrides || {};
+      customFormations = data.customFormations || {};
+      freeformSnapshot = data.freeformSnapshot || null;
+      arrows = data.arrows || [];
+      recordings = data.recordings || {};
+      activeRecordingId = null; activeRecordingKeyframes = null; activeRecordingLabel = "";
+      rebuildFormationSelect();
+      rebuildRecordingSelect();
+      renderArrows();
+      reapplyCurrent();
+      updateRecUI();
+      flashInfo("この端末に保存された内容を読み込みました。");
+    }catch(e){ flashInfo("読込に失敗しました。"); }
+  });
+
+  function flashInfo(msg){
+    document.getElementById("infoBlurb").innerHTML = "<b>お知らせ：</b>"+msg;
+  }
+
+  // ---------- bridge to the Netlify Identity module script (see bottom of page) ----------
+  // The auth module calls window.setRugbyAuthUser(user) after init, login, and logout.
+  window.setRugbyAuthUser = function(user){
+    cloudUser = user;
+    refreshAuthUI();
+    if(user) loadCloud(true);
+  };
+
+  // ---------- init ----------
+  applyFormation("kickoff");
+  updateFormationButtons();
+  rebuildRecordingSelect();
+  updateRecUI();
+})();
+</script>
+
+<script type="module">
+  // Authentication via @netlify/identity (the successor to the deprecated
+  // netlify-identity-widget). This only works once deployed to Netlify with
+  // Identity enabled — see README.md.
+  import { signup, login, logout, getUser, handleAuthCallback } from "https://esm.sh/@netlify/identity";
+
+  window.RugbyAuthAPI = { signup: signup, login: login, logout: logout };
+
+  var authPanel = document.getElementById("authPanel");
+  var authMsg = document.getElementById("authMsg");
+  var DEFAULT_AUTH_MSG = authMsg.textContent;
+
+  function showAuthMsg(text, isError){
+    authMsg.textContent = text;
+    authMsg.classList.toggle("error", !!isError);
+  }
+
+  document.getElementById("loginBtn").addEventListener("click", function(){
+    authPanel.style.display = authPanel.style.display === "flex" ? "none" : "flex";
+    showAuthMsg(DEFAULT_AUTH_MSG, false);
+  });
+  document.getElementById("authCancelBtn").addEventListener("click", function(){
+    authPanel.style.display = "none";
+  });
+  document.getElementById("logoutBtn").addEventListener("click", async function(){
+    try{ await logout(); }catch(e){ /* ignore */ }
+    if(window.setRugbyAuthUser) window.setRugbyAuthUser(null);
+  });
+
+  async function doAuth(action){
+    var email = document.getElementById("authEmail").value.trim();
+    var password = document.getElementById("authPassword").value;
+    if(!email || !password){ showAuthMsg("メールアドレスとパスワードを入力してください。", true); return; }
+    try{
+      var user;
+      if(action === "login"){
+        user = await login(email, password);
+      } else {
+        user = await signup(email, password);
+        showAuthMsg("確認メールを送りました。メール内のリンクを開くとログインできます。", false);
+      }
+      if(window.setRugbyAuthUser) window.setRugbyAuthUser(user || null);
+      if(action === "login"){
+        authPanel.style.display = "none";
+      }
+    }catch(e){
+      showAuthMsg("エラー: " + (e && e.message ? e.message : "認証に失敗しました。"), true);
+    }
+  }
+
+  document.getElementById("authLoginBtn").addEventListener("click", function(){ doAuth("login"); });
+  document.getElementById("authSignupBtn").addEventListener("click", function(){ doAuth("signup"); });
+
+  (async function initAuth(){
+    try{ await handleAuthCallback(); }catch(e){ /* no pending callback, or it failed silently */ }
+    try{
+      var user = await getUser();
+      if(window.setRugbyAuthUser) window.setRugbyAuthUser(user || null);
+    }catch(e){
+      var statusEl = document.getElementById("authStatus");
+      if(statusEl) statusEl.textContent = "この配信元ではログイン機能を確認できませんでした（Netlifyへのデプロイ・Identity有効化が必要です）";
+    }
+  })();
+</script>
+</body>
+</html>
